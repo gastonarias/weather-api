@@ -1,0 +1,19 @@
+# binarios
+/app
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# go
+go.sum
+
+# logs
+*.log
+
+# mac
+.DS_Store
+
+# env
+.env
