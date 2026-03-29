@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
+	"os"
 
 	"go.uber.org/zap"
 
@@ -32,12 +33,17 @@ func main() {
 	mux.HandleFunc("/health", handler.Health)
 	mux.HandleFunc("/weather", handler.GetWeather)
 
-	withRequestID := httpAdapter.RequestIDMiddleware(logger, mux)
-	withLogging := httpAdapter.LoggingMiddleware(logger, withRequestID)
+	withLogging := httpAdapter.LoggingMiddleware(logger, mux)
+	withRequestID := httpAdapter.RequestIDMiddleware(logger, withLogging)
 
-	logger.Info("starting server", zap.String("port", "8080"))
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
 
-	if err := http.ListenAndServe(":8080", withLogging); err != nil {
+	logger.Info("starting server", zap.String("port", port))
+
+	if err := http.ListenAndServe(":"+port, withRequestID); err != nil {
 		logger.Fatal("server failed", zap.Error(err))
 	}
 }

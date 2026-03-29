@@ -27,13 +27,12 @@ func LoggingMiddleware(logger *zap.Logger, next http.Handler) http.Handler {
 			statusCode:     http.StatusOK,
 		}
 
+		duration := time.Since(start)
+		reqLogger := infrastructure.GetLogger(r.Context())
+
 		next.ServeHTTP(rw, r)
 
-		duration := time.Since(start)
-		requestID := infrastructure.GetRequestID(r.Context())
-
-		logger.Info("http request",
-			zap.String("request_id", requestID),
+		reqLogger.Info("http request",
 			zap.String("method", r.Method),
 			zap.String("path", r.URL.Path),
 			zap.Int("status", rw.statusCode),

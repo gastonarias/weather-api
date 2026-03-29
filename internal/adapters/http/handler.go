@@ -26,16 +26,15 @@ func (h *Handler) Health(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handler) GetWeather(w http.ResponseWriter, r *http.Request) {
 
-	w.Header().Set("Content-Type", "application/json")
+	logger := infrastructure.GetLogger(r.Context())
 
 	latStr := r.URL.Query().Get("lat")
 	lonStr := r.URL.Query().Get("lon")
 
 	lat, err := strconv.ParseFloat(latStr, 64)
 	if err != nil {
-		h.logger.Warn("invalid lat",
+		logger.Warn("invalid lat",
 			zap.String("lat", latStr),
-			zap.String("request_id", infrastructure.GetRequestID(r.Context())),
 			zap.Error(err),
 		)
 
@@ -49,9 +48,8 @@ func (h *Handler) GetWeather(w http.ResponseWriter, r *http.Request) {
 
 	lon, err := strconv.ParseFloat(lonStr, 64)
 	if err != nil {
-		h.logger.Warn("invalid lon",
+		logger.Warn("invalid lon",
 			zap.String("lon", lonStr),
-			zap.String("request_id", infrastructure.GetRequestID(r.Context())),
 			zap.Error(err),
 		)
 
@@ -65,7 +63,7 @@ func (h *Handler) GetWeather(w http.ResponseWriter, r *http.Request) {
 
 	result, err := h.service.GetWeather(r.Context(), lat, lon)
 	if err != nil {
-		h.logger.Error("failed to get weather",
+		logger.Error("failed to get weather",
 			zap.Error(err),
 			zap.Float64("lat", lat),
 			zap.Float64("lon", lon),

@@ -15,6 +15,11 @@ func RequestIDMiddleware(logger *zap.Logger, next http.Handler) http.Handler {
 		requestID := uuid.New().String()
 
 		ctx := infrastructure.WithRequestID(r.Context(), requestID)
+
+		reqLogger := logger.With(zap.String("request_id", requestID))
+
+		ctx = infrastructure.WithLogger(ctx, reqLogger)
+
 		r = r.WithContext(ctx)
 
 		// opcional: devolverlo al cliente
