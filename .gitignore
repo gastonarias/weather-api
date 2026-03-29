@@ -7,7 +7,6 @@
 *.dylib
 
 # go
-go.sum
 
 # logs
 *.log
